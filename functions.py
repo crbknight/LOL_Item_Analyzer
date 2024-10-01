@@ -5,10 +5,11 @@ import re
 
 
 # Function to get an item's ID by by name
-def get_item_id_name(item_name, item_data):
+def get_item_id_name(item_name, item_data, map_id=11):
     for item_id, item_info in item_data.items():
         if item_info['name'] == item_name:
-            return item_id, item_info
+            if item_info['maps'].get(str(map_id),False):
+                return item_id, item_info
     return None, None
 
 def extract_special_stat(description, stat_name):
