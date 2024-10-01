@@ -1,4 +1,4 @@
-from functions import *
+from functions import calculate_base_gold
 import requests
 
 version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
@@ -10,5 +10,7 @@ current_patch = versions[0]
 
 print(f"Current Patch Version: {current_patch}")
 
-calculate_base_gold(current_patch)
+base_values = calculate_base_gold(current_patch)
+
+print(base_values)
     
