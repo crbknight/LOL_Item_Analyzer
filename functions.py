@@ -96,7 +96,7 @@ def calculate_base_gold(current_patch):
             #print(f"Current stats: {stats}")
             #print(f"Current description: {description}")
 
-            # TODO add the calcs with extra stats, should pull temp variables dynamically in case it changes
+            # TODO add the calcs with extra stats, should pull temp variables dynamically in case it changes.
             match item_name:
                 case "Long Sword":
                     baseAD = extract_special_stat(description, "Attack Damage")
