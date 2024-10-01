@@ -86,7 +86,11 @@ def calculate_base_gold(current_patch):
         #print(f"Current item_id: {item_id}")
         #print(f"Current item_info: {item_info}")
 
+        # TODO need to check that i'm getting the right item, via a map tag? Or some other ID. EX all boots have dupes for arena map (THANKS RIOT)
+
         if item_id and item_info:
+            # GOLD COST DIFFERS FOR SOME ITEMS
+            
             gold_cost = item_info.get("gold", {}).get("total", 0)
             stats = item_info.get("stats", {})
             description = item_info.get('description', "")
@@ -153,7 +157,7 @@ def calculate_base_gold(current_patch):
                         tempGold = gold_cost - (tempAD*base_values["AD"])
                         basePercentArmorPen = tempGold / basePercentArmorPen
                         base_values["Percent Armor Pen"] = basePercentArmorPen
-                        print(f"{item_name} (ID: {item_id}), % Armor Pen: {basePercentArmorPen}")
+                        print(f"{item_name} (ID: {item_id}), % Armor Pen Calc: {basePercentArmorPen}")
 
                 case "Amplifying Tome":
                     baseAP = extract_special_stat(description, "Ability Power")
@@ -183,7 +187,11 @@ def calculate_base_gold(current_patch):
                     if basePercentMPen == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), % Magic Pen: {basePercentMPen}")
+                        tempAP = extract_special_stat(description, "Ability Power")
+                        tempGold = gold_cost - (tempAP * base_values["AP"])
+                        basePercentMPen = tempGold / basePercentMPen
+                        base_values["Percent Magic Pen"] = basePercentMPen
+                        print(f"{item_name} (ID: {item_id}), % Magic Pen Calc: {basePercentMPen}")
 
                 case "Ruby Crystal":
                     baseHP = extract_special_stat(description, "Health")
@@ -252,7 +260,11 @@ def calculate_base_gold(current_patch):
                     if baseLifesteal == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), Lifesteal: {baseLifesteal}")
+                        tempAD = extract_special_stat(description, "Attack Damage")
+                        tempGold = gold_cost - (tempAD*base_values["AD"])
+                        baseLifesteal = tempGold / baseLifesteal
+                        base_values["Lifesteal"] = baseLifesteal
+                        print(f"{item_name} (ID: {item_id}), Lifesteal Calc: {baseLifesteal}")
 
                 case "Boots":
                     baseFlatMS = extract_special_stat(description, "Move Speed")
@@ -271,7 +283,11 @@ def calculate_base_gold(current_patch):
                     if baseHealShieldPower == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), Heal/Shield Power: {baseHealShieldPower}")
+                        tempManaRegen = extract_special_stat(description, "Base Mana Regen")
+                        tempGold = gold_cost - (tempManaRegen * base_values["Mana Regen"])
+                        baseHealShieldPower = tempGold / baseHealShieldPower
+                        base_values["Heal/Shield Power"] = baseHealShieldPower
+                        print(f"{item_name} (ID: {item_id}), Heal/Shield Power Calc: {baseHealShieldPower}")
 
                 case "Sorcerer's Shoes":
                     # Note extra stats: MS
@@ -280,7 +296,11 @@ def calculate_base_gold(current_patch):
                     if baseMPen == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), Flat Magic Pen: {baseMPen}")
+                        tempMS = extract_special_stat(description, "Move Speed")
+                        tempGold = gold_cost - (tempMS * base_values["MS"])
+                        baseMPen = tempGold / baseMPen
+                        base_values["Magic Pen"] = baseMPen
+                        print(f"{item_name} (ID: {item_id}), Flat Magic Pen Calc: {baseMPen}")
 
                 case "Winged Moonplate":
                     # Note extra stats: HP
@@ -289,7 +309,12 @@ def calculate_base_gold(current_patch):
                     if basePercentMS == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), % Move Speed: {basePercentMS}")
+                        tempHP = extract_special_stat(description, "Health")
+                        tempGold = gold_cost - (tempHP * base_values["HP"])
+                        basePercentMS = tempGold / basePercentMS
+                        base_values["Percent MS"] = basePercentMS
+                        # Note wiki is wrong about this, this item gives 4% ms not 5%
+                        print(f"{item_name} (ID: {item_id}), % Move Speed Calc: {basePercentMS}")
 
                 case "Mercury's Treads":
                     # Note extra stats: movement speed, MR
@@ -298,7 +323,16 @@ def calculate_base_gold(current_patch):
                     if basePercentTenacity == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), Tenacity: {basePercentTenacity}")
+                        tempMS = extract_special_stat(description, "Move Speed")
+                        tempMR = extract_special_stat(description, "Magic Resist")
+                        print(f"{item_name} debug tempMS: {tempMS}")
+                        print(f"{item_name} debug tempMR: {tempMR}")
+                        tempGold = gold_cost - ((tempMS * base_values["MS"])+(tempMR * base_values["MR"]))
+                        print(f"{item_name} debug gold_cost: {gold_cost}")
+                        print(f"{item_name} debug tempGold: {tempGold}")
+                        basePercentTenacity = tempGold / basePercentTenacity
+                        base_values["Tenacity"] = basePercentTenacity
+                        print(f"{item_name} (ID: {item_id}), Tenacity Calc: {basePercentTenacity}")
 
                 case _:
                     print(f"Item '{item_name}' has no matching case.")
@@ -306,4 +340,3 @@ def calculate_base_gold(current_patch):
             print(f"Something went wrong with {item_name}, ID: {item_id}")
 
     return base_values
-
