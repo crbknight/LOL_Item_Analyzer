@@ -36,13 +36,7 @@ def extract_special_stat(description, stat_name):
             return int(value)  # Return integer if it's a regular number
     return 0  # Return 0 if the stat is not found
 
-def calculate_base_gold(current_patch):
-    # Getting the items
-    item_url = f"https://ddragon.leagueoflegends.com/cdn/{current_patch}/data/en_US/item.json"
-    item_response = requests.get(item_url)
-    items = item_response.json()
-
-    item_data = items['data']
+def calculate_base_gold(current_patch, item_data):
 
     # Base stats used for gold efficiencies
     # TODO refactor names with "_" instead of camel case (idk why i did this)
@@ -326,11 +320,7 @@ def calculate_base_gold(current_patch):
                     else:
                         tempMS = extract_special_stat(description, "Move Speed")
                         tempMR = extract_special_stat(description, "Magic Resist")
-                        print(f"{item_name} debug tempMS: {tempMS}")
-                        print(f"{item_name} debug tempMR: {tempMR}")
                         tempGold = gold_cost - ((tempMS * base_values["MS"])+(tempMR * base_values["MR"]))
-                        print(f"{item_name} debug gold_cost: {gold_cost}")
-                        print(f"{item_name} debug tempGold: {tempGold}")
                         basePercentTenacity = tempGold / basePercentTenacity
                         base_values["Tenacity"] = basePercentTenacity
                         print(f"{item_name} (ID: {item_id}), Tenacity Calc: {basePercentTenacity}")
@@ -341,3 +331,13 @@ def calculate_base_gold(current_patch):
             print(f"Something went wrong with {item_name}, ID: {item_id}")
 
     return base_values
+
+def get_all_items(item_data, map_id=11):
+    full_item_set = set()
+
+    for item_id, item_info in item_data.items():
+        if item_info['maps'].get(str(map_id), False) and item_info.get('gold', {}).get('purchasable', True):
+            full_item_set.add(item_info['name'])
+
+    sorted_item_set = sorted(full_item_set)
+    return sorted_item_set

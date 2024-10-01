@@ -1,4 +1,4 @@
-from functions import calculate_base_gold
+from functions import calculate_base_gold, get_all_items
 import requests
 
 version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
@@ -8,9 +8,19 @@ versions = current_version_request.json()
 
 current_patch = versions[0]
 
+# Getting the items
+item_url = f"https://ddragon.leagueoflegends.com/cdn/{current_patch}/data/en_US/item.json"
+item_response = requests.get(item_url)
+items = item_response.json()
+
+item_data = items['data']
+
+
 print(f"Current Patch Version: {current_patch}")
 
-base_values = calculate_base_gold(current_patch)
+base_values = calculate_base_gold(current_patch, item_data)
 
-print(base_values)
-    
+item_list = get_all_items(item_data)
+
+for item in item_list:
+    print(item)
