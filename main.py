@@ -46,12 +46,12 @@ basePercentSlow = None
 
 # Current best items for base stats
 # TODO maybe make this dynamic? idk if its worth the time
-# TODO Reorder so that base stats come fires so calculations be done for secondaries via:
 # https://leagueoflegends.fandom.com/wiki/Gold_efficiency_(League_of_Legends)?so=search
-base_item_names = ["Long Sword","Dagger","Cloak of Agility", "Serrated Dirk", "Last Whisper", "Amplifying Tome",
-                   "Glowing Mote", "MPEN (TODO)", "Blighting Jewel", "Ruby Crystal", "Cloth Armor", "Null-Magic Mantle",
-                   "Rejuvenation Bead", "Faerie Charm", "Sapphire Crystal", "Vampiric Scepter",
-                   "Winged Moonplate", "Boots", "Forbidden Idol", "Mercury Treads", "Boots of Swiftness", "Boots of Swiftness"]
+base_item_names = ["Long Sword", "Glowing Mote", "Amplifying Tome", "Cloth Armor",
+                   "Null-Magic Mantle", "Ruby Crystal", "Sapphire Crystal", "Rejuvenation Bead",
+                   "Faerie Charm", "Cloak of Agility", "Dagger", "Boots",
+                   "Last Whisper", "Forbidden Idol", "Serrated Dirk", "Vampiric Scepter", 
+                   "Sorcerer's Shoes", "Blighting Jewel", "Winged Moonplate"]
 
 base_stats = {}
 
@@ -73,92 +73,163 @@ for item_name in base_item_names:
         # Debug Stuff
         #print(f"Current gold cost: {gold_cost}")
         #print(f"Current stats: {stats}")
-        print(f"Current description: {description}")
+        #print(f"Current description: {description}")
 
 
         match item_name:
             case "Long Sword":
                 baseAD = stats.get("FlatPhysicalDamageMod")
                 print("Found Long Sword!")
-                print(f"{item_name} (ID: {item_id}), AD: {baseAD}")
+                if baseAD == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), AD: {baseAD}")
             
             case "Dagger":
                 baseAS = stats.get("PercentAttackSpeedMod")
                 print("Found Dagger!")
-                print(f"{item_name} (ID: {item_id}), AS: {baseAS}")
+                if baseAS == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), AS: {baseAS}")
 
             case "Cloak of Agility":
                 baseCrit = stats.get("FlatCritChanceMod")
                 print("Found Cloak of Agility!")
-                print(f"{item_name} (ID: {item_id}), Crit: {baseCrit}")
+                if baseCrit == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Crit: {baseCrit}")
 
             case "Serrated Dirk":
                 # Note extra stats
-                # TODO fix?
                 baseLethality = extract_special_stat(description, "Lethality")
                 print("Found Serrated Dirk!")
-                print(f"{item_name} (ID: {item_id}), Lethality: {baseLethality}")
+                if baseLethality == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Lethality: {baseLethality}")
 
             case "Last Whisper":
                 # Note extra stats
                 basePercentArmorPen = extract_special_stat(description,"Armor Penetration")
                 print("Found Last Whisper!")
-                print(f"{item_name} (ID: {item_id}), % Armor Pen: {basePercentArmorPen}")
+                if basePercentArmorPen == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), % Armor Pen: {basePercentArmorPen}")
 
             case "Amplifying Tome":
                 baseAP = stats.get("FlatMagicDamageMod")
                 print("Found Amplfying Tome!")
-                print(f"{item_name} (ID: {item_id}), AP: {baseAP}")
+                if baseAP == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), AP: {baseAP}")
 
             case "Glowing Mote":
                 baseAH = extract_special_stat(description,"Ability Haste")
                 print("Found Glowing Mote!")
-                print(f"{item_name} (ID: {item_id}), AH: {baseAH}")
+                if baseAH == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), AH: {baseAH}")
 
             case "Blighting Jewel":
                 basePercentMPen = extract_special_stat(description,"Magic Penetration")
                 print("Found Blighting Jewel!")
-                print(f"{item_name} (ID: {item_id}), % Magic Pen: {basePercentMPen}")
+                if basePercentMPen == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), % Magic Pen: {basePercentMPen}")
 
             case "Ruby Crystal":
                 baseHP = stats.get("FlatHPPoolMod")
                 print("Found Ruby Crystal!")
-                print(f"{item_name} (ID: {item_id}), HP: {baseHP}")
+                if baseHP == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), HP: {baseHP}")
 
             case "Cloth Armor":
                 baseArmor = stats.get("FlatArmorMod")
                 print("Found Cloth Armor!")
-                print(f"{item_name} (ID: {item_id}), Armor: {baseArmor}")
+                if baseArmor == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Armor: {baseArmor}")
 
             case "Null-Magic Mantle":
                 baseMR = stats.get("FlatSpellBlockMod")
                 print("Found Ruby Crystal!")
-                print(f"{item_name} (ID: {item_id}), MR: {baseMR}")
+                if baseMR == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), MR: {baseMR}")
 
             case "Rejuvenation Bead":
                 baseHpRegen = extract_special_stat(description,"Base Health Regen")
                 print("Found Rejuvenation Bead!")
-                print(f"{item_name} (ID: {item_id}), HP Regen: {baseHpRegen}")
+                if baseHpRegen == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), HP Regen: {baseHpRegen}")
 
             case "Faerie Charm":
                 baseManaRegen = extract_special_stat(description,"Base Mana Regen")
                 print("Found Faerie Charm!")
-                print(f"{item_name} (ID: {item_id}), HP Regen: {baseManaRegen}")
+                if baseManaRegen == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), HP Regen: {baseManaRegen}")
 
             case "Sapphire Crystal":
                 baseMana = stats.get("FlatMPPoolMod")
                 print("Found Sapphire Crystal!")
-                print(f"{item_name} (ID: {item_id}), Mana: {baseMana}")
+                if baseMana == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Mana: {baseMana}")
 
             case "Vampiric Scepter":
                 baseLifesteal = stats.get("PercentLifeStealMod")
                 print("Found Sapphire Crystal!")
-                print(f"{item_name} (ID: {item_id}), Lifesteal: {baseLifesteal}")
+                if baseLifesteal == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Lifesteal: {baseLifesteal}")
 
-            case "Vampiric Scepter":
-                baseLifesteal = stats.get("PercentLifeStealMod")
+            case "Boots":
+                baseFlatMS = stats.get("FlatMovementSpeedMod")
                 print("Found Sapphire Crystal!")
-                print(f"{item_name} (ID: {item_id}), Lifesteal: {baseLifesteal}")
+                if baseFlatMS == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Flat MS: {baseFlatMS}")
+
+            case "Forbidden Idol":
+                baseHealShieldPower = extract_special_stat(description, "Heal and Shield Power")
+                print("Found Forbidden Idol!")
+                if baseHealShieldPower == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Heal/Shield Power: {baseHealShieldPower}")
+
+            case "Sorcerer's Shoes":
+                baseMPen = extract_special_stat(description, "Magic Penetration")
+                print("Found Sorcerer's Shoes!")
+                if baseMPen == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Flat Magic Pen: {baseMPen}")
+
+            case "Winged Moonplate":
+                basePercentMS = stats.get("PercentMovementSpeedMod")
+                print("Found Winged Moonplate!")
+                if basePercentMS == 0:
+                    print(f"Something went wrong with {item_name}, value is 0")
+                else:
+                    print(f"{item_name} (ID: {item_id}), Flat Magic Pen: {basePercentMS}")
 
             case _:
                 print(f"Item '{item_name}' has no matching case.")
