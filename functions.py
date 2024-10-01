@@ -1,7 +1,6 @@
 import requests
-import os
-import time
 import re
+import csv
 
 
 # Function to get an item's ID by by name
@@ -341,3 +340,67 @@ def get_all_items(item_data, map_id=11):
 
     sorted_item_set = sorted(full_item_set)
     return sorted_item_set
+
+def get_item_stats(item_data, item_name, description):
+    item_id, item_info = get_item_id_name(item_name, item_data)
+
+    item_stats_dict = {}
+
+    if not item_info:
+        return item_stats_dict
+
+    maps_available = item_info.get('maps', {})
+    if not maps_available.get("11", False):
+        return item_stats_dict
+    
+    item_stats_dict['AD'] = extract_special_stat(description, "Attack Damage")
+    item_stats_dict['AD'] = extract_special_stat(description, "Attack Speed")
+    item_stats_dict['Crit'] = extract_special_stat(description, "Critical Strike Chance")
+    item_stats_dict['Lethality'] = extract_special_stat(description, "Lethality")
+    item_stats_dict['Armor Pen'] = extract_special_stat(description, "Armor Penetration")
+    item_stats_dict['AP'] = extract_special_stat(description, "Ability Power")
+    item_stats_dict['AH'] = extract_special_stat(description, "Ability Haste")
+    item_stats_dict['Magic Pen'] = extract_special_stat(description, "Magic Penetration")
+    item_PercentMPen = None
+    item_HP = None
+    item_Armor = None
+    item_MR = None
+    item_HpRegen = None
+    item_ManaRegen = None
+    item_Mana = None
+    item_Lifesteal = None
+    item_PercentMS = None
+    item_FlatMS = None
+    item_Heal_Shield_Power = None
+    item_Percent_Tenacity = None
+
+
+
+
+def calculate_and_export(item_data, sorted_items, base_values, current_patch):
+    headers = ['Name', 'Attack Damage', 'Abilty Power', "Attack Speed", "Ability Haste",
+               'Armor', 'Magic Resist', 'Health', 'Mana', 'Health Regen', 'Mana Regen',
+               'Crit Chance', 'Movement Speed (Flat)', '% Movement Speed', 'Lethality', '% Armor Pen', 
+               'Magic Pen (Flat)', '% Magic Pen', 'Heal/Shield Power', 'Lifesteal', 
+               'Stats in Gold', 'Total Gold', 'Gold Efficiency']
+    
+    output_filename = f"{current_patch}"
+
+    with open(output_filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+
+        for item_name in sorted_items:
+            item_id, item_info = get_item_id_name(item_name, item_data)
+            if not item_info:
+                print(f"Something went wrong with {item_name}")
+                continue
+
+        gold_cost = item_info.get('gold',{}).get('total',0)
+        stats = item_info.get
+        description = item_info.get('description', '')
+        total_stat_in_gold = 0
+        row_stats = []
+
+        # Get all of the item stats
+        
