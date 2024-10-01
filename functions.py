@@ -45,7 +45,6 @@ def calculate_base_gold(current_patch):
 
     # Base stats used for gold efficiencies
     # TODO refactor names with "_" instead of camel case (idk why i did this)
-    # Maybe move this into its own function?
     baseAD = None
     baseAS = None
     baseCrit = None
@@ -79,8 +78,6 @@ def calculate_base_gold(current_patch):
 
     base_values = {}
 
-    # Probably move this into its own seperate function
-    # Also might want to consider moving to the regex function for ALL stats
     for item_name in base_item_names:
         item_id, item_info = get_item_id_name(item_name, item_data)
 
@@ -139,7 +136,11 @@ def calculate_base_gold(current_patch):
                     if baseLethality == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
-                        print(f"{item_name} (ID: {item_id}), Lethality: {baseLethality}")
+                        tempAD = extract_special_stat(description, "Attack Damage")
+                        tempGold = gold_cost - (tempAD*base_values["AD"])
+                        baseLethality = tempGold / baseLethality
+                        base_values["Lethality"] = baseLethality
+                        print(f"{item_name} (ID: {item_id}), Lethality Calc: {baseLethality}")
 
                 case "Last Whisper":
                     # Note extra stats: AD
@@ -148,6 +149,10 @@ def calculate_base_gold(current_patch):
                     if basePercentArmorPen == 0:
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
+                        tempAD = extract_special_stat(description, "Attack Damage")
+                        tempGold = gold_cost - (tempAD*base_values["AD"])
+                        basePercentArmorPen = tempGold / basePercentArmorPen
+                        base_values["Percent Armor Pen"] = basePercentArmorPen
                         print(f"{item_name} (ID: {item_id}), % Armor Pen: {basePercentArmorPen}")
 
                 case "Amplifying Tome":
@@ -169,7 +174,8 @@ def calculate_base_gold(current_patch):
                         baseAH = gold_cost / baseAH
                         base_values["AH"] = baseAH
                         print(f"{item_name} (ID: {item_id}), AH Calc: {baseAH}")
-
+                
+                # TODO
                 case "Blighting Jewel":
                     # Note extra stats: AP
                     basePercentMPen = extract_special_stat(description,"Magic Penetration")
