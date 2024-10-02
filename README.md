@@ -15,7 +15,7 @@ Requests and Regex can be installed via pip:
 `pip install regex`
 will install both.
 
-After installation you can run `main.py` to generate a CSV file of the current League of Legends patch
+After installation clone the repository using `git clone https://github.com/crbknight/LOL_Item_Analyzer.git`. Then you can run `main.py` to generate a CSV file of the current League of Legends patch
 ## Importing to Google Sheets
 After generating a CSV file using `main.py` you can import it to Google Sheets via:
 
