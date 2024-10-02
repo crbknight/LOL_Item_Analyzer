@@ -1,4 +1,4 @@
-from functions import calculate_base_gold, get_all_items
+from functions import calculate_base_gold, get_all_items, calculate_and_export
 import requests
 
 version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
@@ -22,5 +22,4 @@ base_values = calculate_base_gold(current_patch, item_data)
 
 item_list = get_all_items(item_data)
 
-for item in item_list:
-    print(item)
+calculate_and_export(item_data, item_list, base_values, current_patch)

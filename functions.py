@@ -150,7 +150,7 @@ def calculate_base_gold(current_patch, item_data):
                         tempAD = extract_special_stat(description, "Attack Damage")
                         tempGold = gold_cost - (tempAD*base_values["AD"])
                         basePercentArmorPen = tempGold / basePercentArmorPen
-                        base_values["Percent Armor Pen"] = basePercentArmorPen
+                        base_values["Armor Pen"] = basePercentArmorPen
                         print(f"{item_name} (ID: {item_id}), % Armor Pen Calc: {basePercentArmorPen}")
 
                 case "Amplifying Tome":
@@ -173,7 +173,6 @@ def calculate_base_gold(current_patch, item_data):
                         base_values["AH"] = baseAH
                         print(f"{item_name} (ID: {item_id}), AH Calc: {baseAH}")
                 
-                # TODO
                 case "Blighting Jewel":
                     # Note extra stats: AP
                     basePercentMPen = extract_special_stat(description,"Magic Penetration")
@@ -214,7 +213,7 @@ def calculate_base_gold(current_patch, item_data):
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
                         baseMR = gold_cost / baseMR
-                        base_values["MR"] = baseMR
+                        base_values['Magic Resist'] = baseMR
                         print(f"{item_name} (ID: {item_id}), MR Calc: {baseMR}")
 
                 case "Rejuvenation Bead":
@@ -267,7 +266,7 @@ def calculate_base_gold(current_patch, item_data):
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
                         baseFlatMS = gold_cost / baseFlatMS
-                        base_values["MS"] = baseFlatMS
+                        base_values["Flat MS"] = baseFlatMS
                         print(f"{item_name} (ID: {item_id}), Flat MS: {baseFlatMS}")
 
                 case "Forbidden Idol":
@@ -280,7 +279,7 @@ def calculate_base_gold(current_patch, item_data):
                         tempManaRegen = extract_special_stat(description, "Base Mana Regen")
                         tempGold = gold_cost - (tempManaRegen * base_values["Mana Regen"])
                         baseHealShieldPower = tempGold / baseHealShieldPower
-                        base_values["Heal/Shield Power"] = baseHealShieldPower
+                        base_values["Heal and Shield Power"] = baseHealShieldPower
                         print(f"{item_name} (ID: {item_id}), Heal/Shield Power Calc: {baseHealShieldPower}")
 
                 case "Sorcerer's Shoes":
@@ -291,7 +290,7 @@ def calculate_base_gold(current_patch, item_data):
                         print(f"Something went wrong with {item_name}, value is 0")
                     else:
                         tempMS = extract_special_stat(description, "Move Speed")
-                        tempGold = gold_cost - (tempMS * base_values["MS"])
+                        tempGold = gold_cost - (tempMS * base_values["Flat MS"])
                         baseMPen = tempGold / baseMPen
                         base_values["Magic Pen"] = baseMPen
                         print(f"{item_name} (ID: {item_id}), Flat Magic Pen Calc: {baseMPen}")
@@ -319,7 +318,7 @@ def calculate_base_gold(current_patch, item_data):
                     else:
                         tempMS = extract_special_stat(description, "Move Speed")
                         tempMR = extract_special_stat(description, "Magic Resist")
-                        tempGold = gold_cost - ((tempMS * base_values["MS"])+(tempMR * base_values["MR"]))
+                        tempGold = gold_cost - ((tempMS * base_values['Flat MS'])+(tempMR * base_values['Magic Resist']))
                         basePercentTenacity = tempGold / basePercentTenacity
                         base_values["Tenacity"] = basePercentTenacity
                         print(f"{item_name} (ID: {item_id}), Tenacity Calc: {basePercentTenacity}")
@@ -353,29 +352,43 @@ def get_item_stats(item_data, item_name, description):
     if not maps_available.get("11", False):
         return item_stats_dict
     
+    # Repeats could cause problems, but should be okay since usually items don't have both % and flat on the same stat
     item_stats_dict['AD'] = extract_special_stat(description, "Attack Damage")
-    item_stats_dict['AD'] = extract_special_stat(description, "Attack Speed")
+    item_stats_dict['AS'] = extract_special_stat(description, "Attack Speed")
     item_stats_dict['Crit'] = extract_special_stat(description, "Critical Strike Chance")
     item_stats_dict['Lethality'] = extract_special_stat(description, "Lethality")
     item_stats_dict['Armor Pen'] = extract_special_stat(description, "Armor Penetration")
     item_stats_dict['AP'] = extract_special_stat(description, "Ability Power")
     item_stats_dict['AH'] = extract_special_stat(description, "Ability Haste")
     item_stats_dict['Magic Pen'] = extract_special_stat(description, "Magic Penetration")
-    item_PercentMPen = None
-    item_HP = None
-    item_Armor = None
-    item_MR = None
-    item_HpRegen = None
-    item_ManaRegen = None
-    item_Mana = None
-    item_Lifesteal = None
-    item_PercentMS = None
-    item_FlatMS = None
-    item_Heal_Shield_Power = None
-    item_Percent_Tenacity = None
+    item_stats_dict['Percent Magic Pen'] = extract_special_stat(description, "Magic Penetration")
+    item_stats_dict['HP'] = extract_special_stat(description, "Health")
+    item_stats_dict['Armor'] = extract_special_stat(description, "Armor")
+    item_stats_dict['Magic Resist'] = extract_special_stat(description, "Magic Resist")
+    item_stats_dict['HP Regen'] = extract_special_stat(description,"Base Health Regen")
+    item_stats_dict['Mana Regen'] = extract_special_stat(description,"Base Mana Regen")
+    item_stats_dict['Mana'] = extract_special_stat(description,"Mana")
+    item_stats_dict['Lifesteal'] = extract_special_stat(description,"Lifesteal")
+    item_stats_dict['Percent MS'] = extract_special_stat(description,"Move Speed")
+    item_stats_dict['Flat MS'] = extract_special_stat(description,"Move Speed")
+    item_stats_dict['Heal and Shield Power'] = extract_special_stat(description,"Heal and Shield Power")
+    item_stats_dict['Tenacity'] = extract_special_stat(description,"Tenacity")
 
+    return item_stats_dict
 
+def calculate_stat(stat, row_list):
+    if stat > 0:
+        row_list.append(stat)
+    else:
+        row_list.append(0)
 
+def stats_in_gold_adder(stat, stat_name, base_values):
+    final_stats_in_gold = 0
+    if stat > 0:
+        final_stats_in_gold = final_stats_in_gold + (base_values[stat_name] * stat)
+    else:
+        final_stats_in_gold = 0
+    return final_stats_in_gold
 
 def calculate_and_export(item_data, sorted_items, base_values, current_patch):
     headers = ['Name', 'Attack Damage', 'Abilty Power', "Attack Speed", "Ability Haste",
@@ -384,7 +397,7 @@ def calculate_and_export(item_data, sorted_items, base_values, current_patch):
                'Magic Pen (Flat)', '% Magic Pen', 'Heal/Shield Power', 'Lifesteal', 
                'Stats in Gold', 'Total Gold', 'Gold Efficiency']
     
-    output_filename = f"{current_patch}"
+    output_filename = f"{current_patch}.csv"
 
     with open(output_filename, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -393,14 +406,48 @@ def calculate_and_export(item_data, sorted_items, base_values, current_patch):
         for item_name in sorted_items:
             item_id, item_info = get_item_id_name(item_name, item_data)
             if not item_info:
-                print(f"Something went wrong with {item_name}")
+                print(f"Something went wrong with {item_name}, not in item_info")
                 continue
 
-        gold_cost = item_info.get('gold',{}).get('total',0)
-        stats = item_info.get
-        description = item_info.get('description', '')
-        total_stat_in_gold = 0
-        row_stats = []
+            gold_cost = item_info.get('gold',{}).get('total',0)
+            if gold_cost == 0:
+                print(f"Something went wrong with {item_name}, gold_cost is 0")
+                continue
 
-        # Get all of the item stats
-        
+            stats = item_info.get
+            description = item_info.get('description', '')
+            row_stats = [item_name]
+            stats_in_gold = 0
+            gold_efficiency = 0
+
+            # Get all of the item stats
+            item_stats = get_item_stats(item_data, item_name, description)
+
+            # Check if the stat is greater than 0, if yes, append the stat and add it to running gold total, if not then append 0. Calculate GE at end
+
+            list_of_stats = ['AD', 'AP', 'AS', 'AH', 'Armor', 'Magic Resist', 'HP', 'Mana', 'HP Regen', 'Mana Regen', 'Crit', 'Flat MS', 'Percent MS', 'Lethality', 
+                             'Armor Pen', 'Magic Pen', 'Percent Magic Pen', 'Heal and Shield Power', 'Lifesteal']
+
+            for stats in list_of_stats:
+                print(f"Stats in gold: {stats_in_gold}")
+                calculate_stat(item_stats[stats], row_stats)
+                stats_in_gold = stats_in_gold + stats_in_gold_adder(item_stats[stats], stats, base_values)
+
+
+            row_stats.append(stats_in_gold)
+            row_stats.append(gold_cost)
+
+            if gold_cost > 0 and stats_in_gold != 0:
+                gold_efficiency = gold_cost / stats_in_gold
+                row_stats.append(gold_efficiency)
+            else:
+                gold_efficiency = 0
+                row_stats.append(gold_efficiency)
+
+            writer.writerow(row_stats)
+
+        print(f"Exported gold efficiency data to {output_filename}")
+
+            
+
+
