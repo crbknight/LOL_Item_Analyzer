@@ -20,6 +20,8 @@ print(f"Current Patch Version: {current_patch}")
 
 base_values = calculate_base_gold(current_patch, item_data)
 
+print(base_values)
+
 item_list = get_all_items(item_data)
 
 calculate_and_export(item_data, item_list, base_values, current_patch)

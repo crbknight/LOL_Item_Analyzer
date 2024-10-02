@@ -11,29 +11,42 @@ def get_item_id_name(item_name, item_data, map_id=11):
                 return item_id, item_info
     return None, None
 
-def extract_special_stat(description, stat_name):
-    # Pattern to match both percentages and regular numbers for the given stat
-    pattern_one = rf"<attention>(\d+%?)</attention> {stat_name}"
+def extract_special_stat(description, stat_name, flat_or_percent="either"):
+    """
+    Extracts a specific stat value from the description based on the stat_name.
+    - flat_or_percent: "flat" for flat stats, "percent" for percentage stats, "either" for both.
+    """
+    # Modify the patterns to check for flat or percentage stats based on the provided option
+    if flat_or_percent == "percent":
+        pattern_one = rf"<attention>(\d+%)</attention> {stat_name}"
+        pattern_two = rf"<buffedStat>(\d+%)</buffedStat> {stat_name}"
+    elif flat_or_percent == "flat":
+        pattern_one = rf"<attention>(\d+)</attention> {stat_name}"
+        pattern_two = rf"<buffedStat>(\d+)</buffedStat> {stat_name}"
+    else:  # Default to "either"
+        pattern_one = rf"<attention>(\d+%?)</attention> {stat_name}"
+        pattern_two = rf"<buffedStat>(\d+%?)</buffedStat> {stat_name}"
+
+    # First, try to match using the 'attention' tag
     match = re.search(pattern_one, description)
     if match:
         value = match.group(1)
-        # If the value is a percentage (ends with '%'), convert it to decimal
         if value.endswith('%'):
-            return float(value[:-1]) # Used to convert "18%" to 0.18
+            return float(value[:-1])  # If it's a percentage, convert to a float
         else:
-            return int(value)  # Return integer if it's a regular number
-        
-    # Some descriptions have buffedstats instead of attention
-    pattern_two = rf"<buffedStat>(\d+%?)</buffedStat> {stat_name}"
+            return int(value)  # If it's a flat number, return as an integer
+
+    # If 'attention' tag doesn't match, try the 'buffedStat' tag
     match = re.search(pattern_two, description)
     if match:
         value = match.group(1)
-        # If the value is a percentage (ends with '%'), convert it to decimal
         if value.endswith('%'):
-            return float(value[:-1]) # Used to convert "18%" to 0.18
+            return float(value[:-1])  # If it's a percentage, convert to a float
         else:
-            return int(value)  # Return integer if it's a regular number
+            return int(value)  # If it's a flat number, return as an integer
+
     return 0  # Return 0 if the stat is not found
+
 
 def calculate_base_gold(current_patch, item_data):
 
@@ -352,7 +365,7 @@ def get_item_stats(item_data, item_name, description):
     if not maps_available.get("11", False):
         return item_stats_dict
     
-    # Repeats could cause problems, but should be okay since usually items don't have both % and flat on the same stat
+        # Repeats could cause problems, but should be okay since usually items don't have both % and flat on the same stat
     item_stats_dict['AD'] = extract_special_stat(description, "Attack Damage")
     item_stats_dict['AS'] = extract_special_stat(description, "Attack Speed")
     item_stats_dict['Crit'] = extract_special_stat(description, "Critical Strike Chance")
@@ -360,17 +373,23 @@ def get_item_stats(item_data, item_name, description):
     item_stats_dict['Armor Pen'] = extract_special_stat(description, "Armor Penetration")
     item_stats_dict['AP'] = extract_special_stat(description, "Ability Power")
     item_stats_dict['AH'] = extract_special_stat(description, "Ability Haste")
-    item_stats_dict['Magic Pen'] = extract_special_stat(description, "Magic Penetration")
-    item_stats_dict['Percent Magic Pen'] = extract_special_stat(description, "Magic Penetration")
+    
+    # Handle the distinction between flat and percent magic penetration
+    item_stats_dict['Magic Pen'] = extract_special_stat(description, "Magic Penetration", "flat")
+    item_stats_dict['Percent Magic Pen'] = extract_special_stat(description, "Magic Penetration", "percent")
+
     item_stats_dict['HP'] = extract_special_stat(description, "Health")
     item_stats_dict['Armor'] = extract_special_stat(description, "Armor")
     item_stats_dict['Magic Resist'] = extract_special_stat(description, "Magic Resist")
-    item_stats_dict['HP Regen'] = extract_special_stat(description,"Base Health Regen")
-    item_stats_dict['Mana Regen'] = extract_special_stat(description,"Base Mana Regen")
-    item_stats_dict['Mana'] = extract_special_stat(description,"Mana")
-    item_stats_dict['Lifesteal'] = extract_special_stat(description,"Lifesteal")
-    item_stats_dict['Percent MS'] = extract_special_stat(description,"Move Speed")
-    item_stats_dict['Flat MS'] = extract_special_stat(description,"Move Speed")
+    item_stats_dict['HP Regen'] = extract_special_stat(description, "Base Health Regen")
+    item_stats_dict['Mana Regen'] = extract_special_stat(description, "Base Mana Regen")
+    item_stats_dict['Mana'] = extract_special_stat(description, "Mana")
+    item_stats_dict['Lifesteal'] = extract_special_stat(description, "Lifesteal")
+
+    # Bug % vs flat MS
+    item_stats_dict['Percent MS'] = extract_special_stat(description, "Move Speed", "percent")
+    item_stats_dict['Flat MS'] = extract_special_stat(description, "Move Speed", "flat")
+
     item_stats_dict['Heal and Shield Power'] = extract_special_stat(description,"Heal and Shield Power")
     item_stats_dict['Tenacity'] = extract_special_stat(description,"Tenacity")
 
@@ -394,7 +413,7 @@ def calculate_and_export(item_data, sorted_items, base_values, current_patch):
     headers = ['Name', 'Attack Damage', 'Abilty Power', "Attack Speed", "Ability Haste",
                'Armor', 'Magic Resist', 'Health', 'Mana', 'Health Regen', 'Mana Regen',
                'Crit Chance', 'Movement Speed (Flat)', '% Movement Speed', 'Lethality', '% Armor Pen', 
-               'Magic Pen (Flat)', '% Magic Pen', 'Heal/Shield Power', 'Lifesteal', 
+               'Magic Pen (Flat)', '% Magic Pen', 'Heal/Shield Power', 'Lifesteal', 'Tenacity',
                'Stats in Gold', 'Total Gold', 'Gold Efficiency']
     
     output_filename = f"{current_patch}.csv"
@@ -426,10 +445,9 @@ def calculate_and_export(item_data, sorted_items, base_values, current_patch):
             # Check if the stat is greater than 0, if yes, append the stat and add it to running gold total, if not then append 0. Calculate GE at end
 
             list_of_stats = ['AD', 'AP', 'AS', 'AH', 'Armor', 'Magic Resist', 'HP', 'Mana', 'HP Regen', 'Mana Regen', 'Crit', 'Flat MS', 'Percent MS', 'Lethality', 
-                             'Armor Pen', 'Magic Pen', 'Percent Magic Pen', 'Heal and Shield Power', 'Lifesteal']
+                             'Armor Pen', 'Magic Pen', 'Percent Magic Pen', 'Heal and Shield Power', 'Lifesteal', 'Tenacity']
 
             for stats in list_of_stats:
-                print(f"Stats in gold: {stats_in_gold}")
                 calculate_stat(item_stats[stats], row_stats)
                 stats_in_gold = stats_in_gold + stats_in_gold_adder(item_stats[stats], stats, base_values)
 
@@ -438,11 +456,12 @@ def calculate_and_export(item_data, sorted_items, base_values, current_patch):
             row_stats.append(gold_cost)
 
             if gold_cost > 0 and stats_in_gold != 0:
-                gold_efficiency = gold_cost / stats_in_gold
+                gold_efficiency = stats_in_gold / gold_cost
                 row_stats.append(gold_efficiency)
             else:
                 gold_efficiency = 0
                 row_stats.append(gold_efficiency)
+                continue
 
             writer.writerow(row_stats)
 
