@@ -32,3 +32,6 @@ If you don't want to create a Google Sheet you may use [this one](https://docs.g
 The sheet is up to date as of patch **14.19.1**. 
 
 This read.me may or may not be accurate or the Google Sheet may or may not be up to date. It is recommended to create and upkeep your own.
+
+## General Notes
+There are some shortcomings to this sheet. For one it does not take into account any passives or unique bonuses an item has. Second some of the gold efficiencies may be misleading. For example support items upgrade into far better items while only costing `400` gold, so they seem incredibly broken (from a gold efficiency point of view) but really should only be taken by supports.
