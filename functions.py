@@ -410,7 +410,7 @@ def stats_in_gold_adder(stat, stat_name, base_values):
     return final_stats_in_gold
 
 def calculate_and_export(item_data, sorted_items, base_values, current_patch):
-    headers = ['Name', 'Attack Damage', 'Abilty Power', "Attack Speed", "Ability Haste",
+    headers = ['Name', 'Attack Damage', 'Ability Power', "Attack Speed", "Ability Haste",
                'Armor', 'Magic Resist', 'Health', 'Mana', 'Health Regen', 'Mana Regen',
                'Crit Chance', 'Movement Speed (Flat)', '% Movement Speed', 'Lethality', '% Armor Pen', 
                'Magic Pen (Flat)', '% Magic Pen', 'Heal/Shield Power', 'Lifesteal', 'Tenacity',
