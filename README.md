@@ -29,7 +29,7 @@ Attached is a script called `format.js` which can be used to auto format a Googl
 ## Current Google Sheets
 If you don't want to create a Google Sheet you may use [this one](https://docs.google.com/spreadsheets/d/17HQ759AxdWPLuvLUE7s0Bj-dD7z98aVPNpgDF0aFgRo/edit?usp=sharing) to quickly view the calculations.
 
-The sheet is up to date as of patch **14.19.1**. 
+The sheet is up to date as of patch **14.20.1**. 
 
 This read.me may or may not be accurate or the Google Sheet may or may not be up to date. It is recommended to create and upkeep your own.
 
